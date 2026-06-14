@@ -16,6 +16,9 @@ interface ReminderDao {
     @Query("SELECT * FROM reminders WHERE id = :id")
     suspend fun getById(id: Long): Reminder?
 
+    @Query("SELECT * FROM reminders")
+    suspend fun getAllOnce(): List<Reminder>
+
     @Insert
     suspend fun insert(reminder: Reminder): Long
 
@@ -30,4 +33,7 @@ interface ReminderDao {
 
     @Query("UPDATE reminders SET isDone = 1 WHERE id = :id")
     suspend fun markDone(id: Long)
+
+    @Query("UPDATE reminders SET calendarEventId = :calendarEventId WHERE id = :id")
+    suspend fun updateCalendarEventId(id: Long, calendarEventId: Long?)
 }

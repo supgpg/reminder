@@ -1,6 +1,7 @@
 package com.reminder.app
 
 import android.app.Application
+import com.reminder.app.calendar.CalendarSyncManager
 import com.reminder.app.data.PersonaPreferences
 import com.reminder.app.data.ReminderDatabase
 import com.reminder.app.data.ReminderRepository
@@ -13,11 +14,17 @@ import com.reminder.app.notification.NaggingNotifier
 
 class ReminderApplication : Application() {
 
-    val repository: ReminderRepository by lazy {
-        ReminderRepository(ReminderDatabase.getInstance(this).reminderDao())
-    }
-
     val personaPreferences: PersonaPreferences by lazy { PersonaPreferences(this) }
+
+    val calendarSyncManager: CalendarSyncManager by lazy { CalendarSyncManager(this) }
+
+    val repository: ReminderRepository by lazy {
+        ReminderRepository(
+            ReminderDatabase.getInstance(this).reminderDao(),
+            calendarSyncManager,
+            personaPreferences,
+        )
+    }
 
     val naggingRepository: NaggingRepository by lazy { NaggingRepository() }
 
