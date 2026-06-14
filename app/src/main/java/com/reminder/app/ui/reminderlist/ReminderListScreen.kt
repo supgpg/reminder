@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Checklist
@@ -59,6 +60,7 @@ fun ReminderListScreen(
     onSettingsClick: () -> Unit,
     onSmartAddClick: () -> Unit,
     onDecomposeClick: () -> Unit,
+    onReportClick: () -> Unit,
 ) {
     val app = LocalContext.current.applicationContext as ReminderApplication
     val viewModel: ReminderListViewModel = viewModel(factory = ReminderListViewModel.factory(app))
@@ -81,6 +83,9 @@ fun ReminderListScreen(
         },
         floatingActionButton = {
             Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                SmallFloatingActionButton(onClick = onReportClick) {
+                    Icon(Icons.Filled.Assessment, contentDescription = stringResource(R.string.report_fab))
+                }
                 SmallFloatingActionButton(onClick = onSmartAddClick) {
                     Icon(Icons.Filled.AutoAwesome, contentDescription = stringResource(R.string.smart_add_fab))
                 }

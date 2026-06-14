@@ -31,8 +31,8 @@ interface ReminderDao {
     @Query("UPDATE reminders SET postponeCount = postponeCount + 1, dueAt = :newDueAt WHERE id = :id")
     suspend fun postpone(id: Long, newDueAt: Long)
 
-    @Query("UPDATE reminders SET isDone = 1 WHERE id = :id")
-    suspend fun markDone(id: Long)
+    @Query("UPDATE reminders SET isDone = 1, completedAt = :completedAt WHERE id = :id")
+    suspend fun markDone(id: Long, completedAt: Long)
 
     @Query("UPDATE reminders SET calendarEventId = :calendarEventId WHERE id = :id")
     suspend fun updateCalendarEventId(id: Long, calendarEventId: Long?)

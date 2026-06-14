@@ -57,4 +57,15 @@
     <string name="consultant_title">AI 상담</string>
     <string name="consultant_dismiss">닫기</string>
     <string name="consultant_accept">이 작업으로 바꾸기</string>
+
+    <!-- 회고 리포트 -->
+    <string name="report_fab">회고 리포트</string>
+    <string name="report_title">회고 리포트</string>
+    <string name="report_period_daily">오늘</string>
+    <string name="report_period_weekly">이번 주</string>
+    <string name="report_completion_rate">완료율 %1$d%% (%2$d / %3$d개)</string>
+    <string name="report_morning_afternoon">오전 마감 %2$d개 중 %1$d개 완료 · 오후 마감 %4$d개 중 %3$d개 완료</string>
+    <string name="report_postponed">미룬 적 있는 할 일 %1$d개 (평균 %2$.1f회)</string>
+    <string name="report_caught_up">지난 할 일 중 이번에 처리한 일 %1$d개</string>
+    <string name="report_ai_feedback_title">AI 코치의 한마디</string>
 </resources>

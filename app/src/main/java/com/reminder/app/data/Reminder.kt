@@ -12,4 +12,5 @@ data class Reminder(
     val postponeCount: Int = 0,
     val isDone: Boolean = false,
     val calendarEventId: Long? = null,
+    val completedAt: Long? = null,
 )

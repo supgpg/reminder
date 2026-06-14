@@ -48,12 +48,38 @@ class ReminderRepository(
     }
 
     suspend fun markDone(id: Long) {
-        dao.markDone(id)
+        dao.markDone(id, System.currentTimeMillis())
 
         if (isSyncActive()) {
             dao.getById(id)?.let { syncToCalendar(it) }
         }
     }
+
+    suspend fun getReportStats(periodLabel: String, startMillis: Long, endMillis: Long): ReportStats {
+        val all = dao.getAllOnce()
+        val dueInPeriod = all.filter { it.dueAt in startMillis until endMillis }
+        val morning = dueInPeriod.filter { hourOf(it.dueAt) < 12 }
+        val afternoon = dueInPeriod.filter { hourOf(it.dueAt) >= 12 }
+        val caughtUp = all.count {
+            it.completedAt != null && it.completedAt in startMillis until endMillis && it.dueAt < startMillis
+        }
+
+        return ReportStats(
+            periodLabel = periodLabel,
+            totalCount = dueInPeriod.size,
+            completedCount = dueInPeriod.count { it.isDone },
+            completionRate = if (dueInPeriod.isEmpty()) 0f else dueInPeriod.count { it.isDone }.toFloat() / dueInPeriod.size,
+            morningTotal = morning.size,
+            morningCompleted = morning.count { it.isDone },
+            afternoonTotal = afternoon.size,
+            afternoonCompleted = afternoon.count { it.isDone },
+            postponedCount = dueInPeriod.count { it.postponeCount > 0 },
+            avgPostponeCount = if (dueInPeriod.isEmpty()) 0f else dueInPeriod.map { it.postponeCount }.average().toFloat(),
+            caughtUpCount = caughtUp,
+        )
+    }
+
+    private fun hourOf(millis: Long): Int = Calendar.getInstance().apply { timeInMillis = millis }.get(Calendar.HOUR_OF_DAY)
 
     suspend fun syncAllToCalendar() {
         if (!isSyncActive()) return

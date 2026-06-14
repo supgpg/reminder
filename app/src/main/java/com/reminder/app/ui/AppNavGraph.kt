@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.reminder.app.ui.addedit.AddEditReminderScreen
 import com.reminder.app.ui.decompose.TaskDecompositionScreen
 import com.reminder.app.ui.reminderlist.ReminderListScreen
+import com.reminder.app.ui.report.ReportScreen
 import com.reminder.app.ui.settings.SettingsScreen
 import com.reminder.app.ui.smartadd.SmartAddScreen
 
@@ -18,6 +19,7 @@ object Routes {
     const val ADD_EDIT = "add_edit"
     const val DECOMPOSE = "decompose"
     const val SMART_ADD = "smart_add"
+    const val REPORT = "report"
     const val REMINDER_ID_ARG = "reminderId"
     val ADD_EDIT_ROUTE = "$ADD_EDIT?$REMINDER_ID_ARG={$REMINDER_ID_ARG}"
 
@@ -37,7 +39,12 @@ fun AppNavGraph() {
                 onSettingsClick = { navController.navigate(Routes.SETTINGS) },
                 onSmartAddClick = { navController.navigate(Routes.SMART_ADD) },
                 onDecomposeClick = { navController.navigate(Routes.DECOMPOSE) },
+                onReportClick = { navController.navigate(Routes.REPORT) },
             )
+        }
+
+        composable(Routes.REPORT) {
+            ReportScreen(onBack = { navController.popBackStack() })
         }
 
         composable(Routes.DECOMPOSE) {

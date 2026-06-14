@@ -7,6 +7,7 @@ import com.reminder.app.data.ReminderDatabase
 import com.reminder.app.data.ReminderRepository
 import com.reminder.app.network.NaggingRepository
 import com.reminder.app.network.PostponeConsultantRepository
+import com.reminder.app.network.ReportRepository
 import com.reminder.app.network.SmartScheduleRepository
 import com.reminder.app.network.TaskDecompositionRepository
 import com.reminder.app.notification.AlarmScheduler
@@ -33,6 +34,8 @@ class ReminderApplication : Application() {
     val postponeConsultantRepository: PostponeConsultantRepository by lazy { PostponeConsultantRepository() }
 
     val smartScheduleRepository: SmartScheduleRepository by lazy { SmartScheduleRepository() }
+
+    val reportRepository: ReportRepository by lazy { ReportRepository() }
 
     val alarmScheduler: AlarmScheduler by lazy { AlarmScheduler(this) }
 
