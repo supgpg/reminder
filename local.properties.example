@@ -1,0 +1,9 @@
+# Copy this file to "local.properties" (which is gitignored) and fill in your values.
+
+# Path to the Android SDK
+sdk.dir=/path/to/Android/sdk
+
+# Anthropic Claude API key used to generate the "AI 잔소리" nagging messages.
+# Get one at https://console.anthropic.com/
+# If left blank, the app falls back to built-in canned messages.
+CLAUDE_API_KEY=

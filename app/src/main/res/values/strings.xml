@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">잔소리 리마인더</string>
+
+    <string name="reminder_list_title">할 일 목록</string>
+    <string name="add_reminder">할 일 추가</string>
+    <string name="edit_reminder">할 일 수정</string>
+    <string name="settings">설정</string>
+
+    <string name="title_label">할 일</string>
+    <string name="description_label">메모 (선택)</string>
+    <string name="due_date_label">날짜</string>
+    <string name="due_time_label">시간</string>
+    <string name="save">저장</string>
+    <string name="delete">삭제</string>
+
+    <string name="empty_list_message">아직 등록된 할 일이 없어요.\n오른쪽 아래 + 버튼으로 추가해 보세요!</string>
+
+    <string name="postpone_count_format">미룬 횟수: %1$d회</string>
+
+    <string name="spice_level_title">잔소리 매운맛</string>
+    <string name="spice_level_mild">순한맛 (다정한 응원)</string>
+    <string name="spice_level_spicy">매운맛 (팩트폭격)</string>
+
+    <string name="notification_channel_name">잔소리 알림</string>
+    <string name="notification_channel_description">할 일 알림과 AI 잔소리 문구를 표시합니다.</string>
+
+    <string name="action_done">완료</string>
+    <string name="action_snooze">10분 후 다시 알림</string>
+
+    <string name="fallback_loading_message">아직 안 끝났죠? 얼른 움직여 봐요!</string>
+</resources>
