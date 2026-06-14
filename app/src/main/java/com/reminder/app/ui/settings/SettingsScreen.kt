@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +24,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,6 +46,8 @@ fun SettingsScreen(onBack: () -> Unit) {
     val viewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.factory(app))
     val spiceLevel by viewModel.spiceLevel.collectAsState()
     val calendarSyncEnabled by viewModel.calendarSyncEnabled.collectAsState()
+    val selectedCalendarIds by viewModel.selectedCalendarIds.collectAsState()
+    val availableCalendars by viewModel.availableCalendars.collectAsState()
 
     val calendarPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
@@ -51,6 +56,12 @@ fun SettingsScreen(onBack: () -> Unit) {
             result[Manifest.permission.WRITE_CALENDAR] == true
         if (granted) {
             viewModel.enableCalendarSync()
+        }
+    }
+
+    if (calendarSyncEnabled) {
+        LaunchedEffect(Unit) {
+            viewModel.loadCalendars()
         }
     }
 
@@ -109,6 +120,43 @@ fun SettingsScreen(onBack: () -> Unit) {
                         checked = calendarSyncEnabled,
                         onCheckedChange = { enabled -> viewModel.setCalendarSyncEnabled(enabled) },
                     )
+                }
+
+                Text(
+                    text = stringResource(R.string.calendar_select_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+                )
+
+                availableCalendars.forEach { calendarInfo ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = calendarInfo.id in selectedCalendarIds,
+                                onClick = {
+                                    viewModel.toggleCalendar(
+                                        calendarInfo.id,
+                                        calendarInfo.id !in selectedCalendarIds,
+                                    )
+                                },
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(
+                            checked = calendarInfo.id in selectedCalendarIds,
+                            onCheckedChange = { checked -> viewModel.toggleCalendar(calendarInfo.id, checked) },
+                        )
+                        Text(text = "${calendarInfo.displayName} (${calendarInfo.accountName})")
+                    }
+                }
+
+                Button(
+                    onClick = { viewModel.refresh() },
+                    modifier = Modifier.padding(top = 8.dp),
+                ) {
+                    Icon(Icons.Filled.Refresh, contentDescription = null)
+                    Text(text = stringResource(R.string.calendar_refresh), modifier = Modifier.padding(start = 8.dp))
                 }
             } else {
                 Button(onClick = {

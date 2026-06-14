@@ -26,6 +26,8 @@
     <string name="calendar_sync_button">캘린더 연동하기</string>
     <string name="calendar_sync_switch_label">캘린더 동기화</string>
     <string name="calendar_sync_denied_message">캘린더 권한이 거부되어 동기화를 켤 수 없어요.</string>
+    <string name="calendar_select_title">동기화할 캘린더 선택</string>
+    <string name="calendar_refresh">새로고침</string>
 
     <string name="notification_channel_name">잔소리 알림</string>
     <string name="notification_channel_description">할 일 알림과 AI 잔소리 문구를 표시합니다.</string>
