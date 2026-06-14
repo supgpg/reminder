@@ -6,6 +6,7 @@ import com.reminder.app.ReminderApplication
 import com.reminder.app.data.Reminder
 import com.reminder.app.data.ReminderRepository
 import com.reminder.app.notification.AlarmScheduler
+import com.reminder.app.ui.AddEditPrefill
 import com.reminder.app.ui.simpleViewModelFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,7 +56,13 @@ class AddEditReminderViewModel(
                 } ?: run { _uiState.value = _uiState.value.copy(isLoading = false) }
             }
         } else {
-            _uiState.value = _uiState.value.copy(isLoading = false)
+            val prefill = AddEditPrefill.consume()
+            _uiState.value = if (prefill != null) {
+                val (title, description, dueAt) = prefill
+                _uiState.value.copy(title = title, description = description, dueAt = dueAt, isLoading = false)
+            } else {
+                _uiState.value.copy(isLoading = false)
+            }
         }
     }
 

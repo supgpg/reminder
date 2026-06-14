@@ -28,4 +28,25 @@
     <string name="action_snooze">10분 후 다시 알림</string>
 
     <string name="fallback_loading_message">아직 안 끝났죠? 얼른 움직여 봐요!</string>
+
+    <!-- 할 일 세분화 -->
+    <string name="decompose_title">AI 할 일 쪼개기</string>
+    <string name="decompose_fab">할 일 쪼개기</string>
+    <string name="decompose_goal_label">막연한 목표를 입력해 보세요</string>
+    <string name="decompose_analyze">AI로 쪼개기</string>
+    <string name="decompose_add_selected">선택한 작업 추가하기</string>
+    <string name="decompose_empty_message">목표를 입력하고 \'AI로 쪼개기\'를 눌러보세요.</string>
+
+    <!-- 스마트 예약 -->
+    <string name="smart_add_title">AI로 빠르게 추가</string>
+    <string name="smart_add_fab">AI로 빠르게 추가</string>
+    <string name="smart_add_input_label">예: 내일 학교 가자마자 선생님께 제출해야 해</string>
+    <string name="smart_add_analyze">분석하기</string>
+    <string name="smart_add_fallback_message">정확히 이해하지 못해서 직접 입력 화면으로 보내드려요. 시간을 확인해주세요.</string>
+
+    <!-- AI 행동 교정 컨설턴트 -->
+    <string name="consultant_button">AI 상담</string>
+    <string name="consultant_title">AI 상담</string>
+    <string name="consultant_dismiss">닫기</string>
+    <string name="consultant_accept">이 작업으로 바꾸기</string>
 </resources>

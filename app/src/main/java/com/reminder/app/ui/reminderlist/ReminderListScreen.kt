@@ -14,8 +14,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,11 +27,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -49,10 +56,13 @@ fun ReminderListScreen(
     onAddClick: () -> Unit,
     onReminderClick: (Reminder) -> Unit,
     onSettingsClick: () -> Unit,
+    onSmartAddClick: () -> Unit,
+    onDecomposeClick: () -> Unit,
 ) {
     val app = LocalContext.current.applicationContext as ReminderApplication
     val viewModel: ReminderListViewModel = viewModel(factory = ReminderListViewModel.factory(app))
     val reminders by viewModel.reminders.collectAsState()
+    var consultantReminderId by remember { mutableStateOf<Long?>(null) }
 
     Scaffold(
         topBar = {
@@ -66,8 +76,16 @@ fun ReminderListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddClick) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_reminder))
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                SmallFloatingActionButton(onClick = onSmartAddClick) {
+                    Icon(Icons.Filled.AutoAwesome, contentDescription = stringResource(R.string.smart_add_fab))
+                }
+                SmallFloatingActionButton(onClick = onDecomposeClick) {
+                    Icon(Icons.Filled.Checklist, contentDescription = stringResource(R.string.decompose_fab))
+                }
+                FloatingActionButton(onClick = onAddClick) {
+                    Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_reminder))
+                }
             }
         },
     ) { padding ->
@@ -98,10 +116,15 @@ fun ReminderListScreen(
                         onClick = { onReminderClick(reminder) },
                         onDone = { viewModel.markDone(reminder) },
                         onDelete = { viewModel.delete(reminder) },
+                        onConsultClick = { consultantReminderId = reminder.id },
                     )
                 }
             }
         }
+    }
+
+    consultantReminderId?.let { reminderId ->
+        ConsultantDialog(reminderId = reminderId, onDismiss = { consultantReminderId = null })
     }
 }
 
@@ -111,6 +134,7 @@ private fun ReminderRow(
     onClick: () -> Unit,
     onDone: () -> Unit,
     onDelete: () -> Unit,
+    onConsultClick: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -139,6 +163,11 @@ private fun ReminderRow(
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.secondary,
                     )
+                }
+            }
+            if (reminder.postponeCount >= ConsultantViewModel.THRESHOLD) {
+                IconButton(onClick = onConsultClick) {
+                    Icon(Icons.Filled.Psychology, contentDescription = stringResource(R.string.consultant_button))
                 }
             }
             IconButton(onClick = onDone) {

@@ -7,13 +7,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.reminder.app.ui.addedit.AddEditReminderScreen
+import com.reminder.app.ui.decompose.TaskDecompositionScreen
 import com.reminder.app.ui.reminderlist.ReminderListScreen
 import com.reminder.app.ui.settings.SettingsScreen
+import com.reminder.app.ui.smartadd.SmartAddScreen
 
 object Routes {
     const val LIST = "list"
     const val SETTINGS = "settings"
     const val ADD_EDIT = "add_edit"
+    const val DECOMPOSE = "decompose"
+    const val SMART_ADD = "smart_add"
     const val REMINDER_ID_ARG = "reminderId"
     val ADD_EDIT_ROUTE = "$ADD_EDIT?$REMINDER_ID_ARG={$REMINDER_ID_ARG}"
 
@@ -31,6 +35,23 @@ fun AppNavGraph() {
                 onAddClick = { navController.navigate(Routes.addEdit()) },
                 onReminderClick = { reminder -> navController.navigate(Routes.addEdit(reminder.id)) },
                 onSettingsClick = { navController.navigate(Routes.SETTINGS) },
+                onSmartAddClick = { navController.navigate(Routes.SMART_ADD) },
+                onDecomposeClick = { navController.navigate(Routes.DECOMPOSE) },
+            )
+        }
+
+        composable(Routes.DECOMPOSE) {
+            TaskDecompositionScreen(onDone = { navController.popBackStack() })
+        }
+
+        composable(Routes.SMART_ADD) {
+            SmartAddScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToAddEdit = {
+                    navController.navigate(Routes.addEdit()) {
+                        popUpTo(Routes.SMART_ADD) { inclusive = true }
+                    }
+                },
             )
         }
 
