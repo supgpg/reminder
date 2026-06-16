@@ -28,6 +28,7 @@
     <string name="calendar_sync_denied_message">캘린더 권한이 거부되어 동기화를 켤 수 없어요.</string>
     <string name="calendar_select_title">동기화할 캘린더 선택</string>
     <string name="calendar_refresh">새로고침</string>
+    <string name="calendar_no_calendars">기기에서 캘린더를 찾지 못했어요. 기기에 캘린더 계정이 있는지 확인해 주세요.</string>
 
     <string name="notification_channel_name">잔소리 알림</string>
     <string name="notification_channel_description">할 일 알림과 AI 잔소리 문구를 표시합니다.</string>
@@ -101,4 +102,8 @@
     <string name="freetime_apply">선택한 일정 적용하기</string>
     <string name="freetime_no_suggestions">AI가 적절한 빈 시간을 찾지 못했어요. 캘린더 동기화가 켜져 있는지 확인해보세요.</string>
     <string name="freetime_no_calendar_permission">캘린더 권한이 없어요. 설정에서 캘린더 동기화를 먼저 켜주세요.</string>
+    <string name="freetime_loading">캘린더를 분석하고 있어요…</string>
+    <string name="freetime_select_hint">%1$d개의 일정 제안 — 적용할 항목을 선택해 주세요</string>
+    <string name="freetime_apply_count">%1$d개 일정 적용하기</string>
+    <string name="feature_active">연동 중</string>
 </resources>

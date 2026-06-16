@@ -1,6 +1,7 @@
 package com.reminder.app.ui.settings
 
 import android.content.Context
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.reminder.app.ReminderApplication
@@ -11,6 +12,8 @@ import com.reminder.app.data.PersonaPreferences
 import com.reminder.app.data.ReminderRepository
 import com.reminder.app.data.SpiceLevel
 import com.reminder.app.ui.simpleViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +40,16 @@ class SettingsViewModel(
     private val _availableCalendars = MutableStateFlow<List<CalendarInfo>>(emptyList())
     val availableCalendars: StateFlow<List<CalendarInfo>> = _availableCalendars.asStateFlow()
 
+    private val _isLoadingCalendars = MutableStateFlow(false)
+    val isLoadingCalendars: StateFlow<Boolean> = _isLoadingCalendars.asStateFlow()
+
+    init {
+        _notificationListenerGranted.value = NotificationManagerCompat
+            .getEnabledListenerPackages(appContext)
+            .contains(appContext.packageName)
+        _usageStatsGranted.value = AppUsageStatsCollector.hasPermission(appContext)
+    }
+
     fun setSpiceLevel(level: SpiceLevel) {
         viewModelScope.launch {
             personaPreferences.setSpiceLevel(level)
@@ -44,14 +57,19 @@ class SettingsViewModel(
     }
 
     fun loadCalendars() {
-        _availableCalendars.value = calendarSyncManager.listCalendars()
+        viewModelScope.launch {
+            _isLoadingCalendars.value = true
+            val result = withContext(Dispatchers.IO) { calendarSyncManager.listCalendars() }
+            _availableCalendars.value = result
+            _isLoadingCalendars.value = false
+        }
     }
 
     fun enableCalendarSync() {
         viewModelScope.launch {
             personaPreferences.setCalendarSyncEnabled(true)
             loadCalendars()
-            repository.refreshCalendarSync()
+            launch { repository.refreshCalendarSync() }
         }
     }
 
@@ -60,7 +78,7 @@ class SettingsViewModel(
             personaPreferences.setCalendarSyncEnabled(enabled)
             if (enabled) {
                 loadCalendars()
-                repository.refreshCalendarSync()
+                launch { repository.refreshCalendarSync() }
             }
         }
     }

@@ -166,7 +166,7 @@ class CalendarSyncManager(private val context: Context) {
             put(CalendarContract.Events.TITLE, title)
             put(CalendarContract.Events.DESCRIPTION, reminder.description)
             put(CalendarContract.Events.DTSTART, reminder.dueAt)
-            put(CalendarContract.Events.DTEND, reminder.dueAt)
+            put(CalendarContract.Events.DTEND, reminder.dueAt + 60 * 60 * 1000L)
             put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
         }
 
