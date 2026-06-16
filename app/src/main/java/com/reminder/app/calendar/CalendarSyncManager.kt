@@ -10,6 +10,7 @@ import android.os.Handler
 import android.provider.CalendarContract
 import androidx.core.content.ContextCompat
 import com.reminder.app.data.Reminder
+import com.reminder.app.data.ReminderRepository
 import java.util.TimeZone
 
 data class CalendarInfo(
@@ -159,7 +160,7 @@ class CalendarSyncManager(private val context: Context) {
     fun upsertEvent(reminder: Reminder, calendarId: Long): Long? {
         if (!hasPermission()) return null
 
-        val title = if (reminder.isDone) "✅ ${reminder.title}" else reminder.title
+        val title = if (reminder.isDone) "${ReminderRepository.DONE_PREFIX}${reminder.title}" else reminder.title
 
         val values = ContentValues().apply {
             put(CalendarContract.Events.CALENDAR_ID, calendarId)

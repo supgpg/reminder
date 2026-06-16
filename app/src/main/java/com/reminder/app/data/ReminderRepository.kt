@@ -85,6 +85,10 @@ class ReminderRepository(
     private fun hourOf(millis: Long): Int = Calendar.getInstance().apply { timeInMillis = millis }.get(Calendar.HOUR_OF_DAY)
 
     suspend fun syncAllToCalendar() {
+        syncMutex.withLock { syncAllInternal() }
+    }
+
+    private suspend fun syncAllInternal() {
         if (!isSyncActive()) return
         try {
             dao.getAllOnce().forEach { syncToCalendar(it) }
@@ -92,6 +96,10 @@ class ReminderRepository(
     }
 
     suspend fun importFromCalendar() {
+        syncMutex.withLock { importInternal() }
+    }
+
+    private suspend fun importInternal() {
         if (!isSyncActive()) return
         try {
             val selected = personaPreferences.selectedCalendarIds.first()
@@ -108,21 +116,28 @@ class ReminderRepository(
             }.timeInMillis
 
             calendarSyncManager.importEvents(selected, sinceMillis).forEach { event ->
+                // Strip the "✅ " prefix we add to completed events on push, so a round-trip
+                // (push → observer fires → import) is idempotent and produces no DB writes.
+                val cleanTitle = event.title.removePrefix(DONE_PREFIX)
                 val known = byEventId[event.eventId]
                 if (known != null) {
-                    if (known.title != event.title || known.description != event.description || known.dueAt != event.dtStart) {
+                    if (known.title != cleanTitle ||
+                        known.description != event.description ||
+                        known.dueAt != event.dtStart
+                    ) {
                         dao.update(
                             known.copy(
-                                title = event.title,
+                                title = cleanTitle,
                                 description = event.description,
                                 dueAt = event.dtStart,
                             ),
                         )
                     }
                 } else {
+                    if (cleanTitle.isBlank()) return@forEach
                     dao.insert(
                         Reminder(
-                            title = event.title,
+                            title = cleanTitle,
                             description = event.description,
                             dueAt = event.dtStart,
                             calendarEventId = event.eventId,
@@ -147,8 +162,8 @@ class ReminderRepository(
     suspend fun refreshCalendarSync() {
         if (syncMutex.isLocked) return
         syncMutex.withLock {
-            syncAllToCalendar()
-            importFromCalendar()
+            syncAllInternal()
+            importInternal()
         }
     }
 
@@ -164,5 +179,9 @@ class ReminderRepository(
         return personaPreferences.calendarSyncEnabled.first() &&
             calendarSyncManager.hasPermission() &&
             personaPreferences.selectedCalendarIds.first().isNotEmpty()
+    }
+
+    companion object {
+        const val DONE_PREFIX = "✅ "
     }
 }

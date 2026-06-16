@@ -45,7 +45,9 @@ class ReminderListViewModel(
                 repository.importFromCalendar()
             }
         }
-        viewModelScope.launch(syncExceptionHandler) { repository.refreshCalendarSync() }
+        // Only import on open; pushing happens on user data changes and via manual/settings refresh.
+        // Pushing every time the list screen opens would re-write all events and storm the observer.
+        viewModelScope.launch(syncExceptionHandler) { repository.importFromCalendar() }
     }
 
     fun refresh() {
