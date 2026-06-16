@@ -43,6 +43,12 @@ class SettingsViewModel(
     private val _isLoadingCalendars = MutableStateFlow(false)
     val isLoadingCalendars: StateFlow<Boolean> = _isLoadingCalendars.asStateFlow()
 
+    private val _notificationListenerGranted = MutableStateFlow(false)
+    val notificationListenerGranted: StateFlow<Boolean> = _notificationListenerGranted.asStateFlow()
+
+    private val _usageStatsGranted = MutableStateFlow(false)
+    val usageStatsGranted: StateFlow<Boolean> = _usageStatsGranted.asStateFlow()
+
     init {
         _notificationListenerGranted.value = NotificationManagerCompat
             .getEnabledListenerPackages(appContext)
@@ -98,9 +104,6 @@ class SettingsViewModel(
         }
     }
 
-    private val _notificationListenerGranted = MutableStateFlow(false)
-    val notificationListenerGranted: StateFlow<Boolean> = _notificationListenerGranted.asStateFlow()
-
     val notificationMiningEnabled: StateFlow<Boolean> = personaPreferences.notificationMiningEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
@@ -113,9 +116,6 @@ class SettingsViewModel(
             personaPreferences.setNotificationMiningEnabled(enabled)
         }
     }
-
-    private val _usageStatsGranted = MutableStateFlow(false)
-    val usageStatsGranted: StateFlow<Boolean> = _usageStatsGranted.asStateFlow()
 
     fun refreshUsageStatsStatus() {
         _usageStatsGranted.value = AppUsageStatsCollector.hasPermission(appContext)
