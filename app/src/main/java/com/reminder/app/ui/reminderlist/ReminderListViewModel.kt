@@ -12,6 +12,7 @@ import com.reminder.app.data.ReminderRepository
 import com.reminder.app.notification.AlarmScheduler
 import com.reminder.app.notification.NaggingNotifier
 import com.reminder.app.ui.simpleViewModelFactory
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -27,18 +28,19 @@ class ReminderListViewModel(
     val reminders: StateFlow<List<Reminder>> = repository.observeAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val calendarObserver: ContentObserver = calendarSyncManager.registerObserver(
-        Handler(Looper.getMainLooper()),
-    ) {
-        viewModelScope.launch { repository.refreshCalendarSync() }
-    }
+    private val syncExceptionHandler = CoroutineExceptionHandler { _, _ -> /* ignore sync errors */ }
+
+    private var calendarObserver: ContentObserver? = null
 
     init {
-        viewModelScope.launch { repository.refreshCalendarSync() }
+        calendarObserver = calendarSyncManager.registerObserver(Handler(Looper.getMainLooper())) {
+            viewModelScope.launch(syncExceptionHandler) { repository.refreshCalendarSync() }
+        }
+        viewModelScope.launch(syncExceptionHandler) { repository.refreshCalendarSync() }
     }
 
     fun refresh() {
-        viewModelScope.launch { repository.refreshCalendarSync() }
+        viewModelScope.launch(syncExceptionHandler) { repository.refreshCalendarSync() }
     }
 
     fun markDone(reminder: Reminder) {
@@ -59,7 +61,7 @@ class ReminderListViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        calendarSyncManager.unregisterObserver(calendarObserver)
+        calendarObserver?.let { calendarSyncManager.unregisterObserver(it) }
     }
 
     companion object {

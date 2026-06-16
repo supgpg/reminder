@@ -133,18 +133,27 @@ class CalendarSyncManager(private val context: Context) {
         }
     }
 
-    fun registerObserver(handler: Handler, onChange: () -> Unit): ContentObserver {
+    fun registerObserver(handler: Handler, onChange: () -> Unit): ContentObserver? {
+        if (!hasPermission()) return null
         val observer = object : ContentObserver(handler) {
             override fun onChange(selfChange: Boolean) {
                 onChange()
             }
         }
-        context.contentResolver.registerContentObserver(CalendarContract.CONTENT_URI, true, observer)
-        return observer
+        return try {
+            context.contentResolver.registerContentObserver(CalendarContract.CONTENT_URI, true, observer)
+            observer
+        } catch (e: SecurityException) {
+            null
+        }
     }
 
     fun unregisterObserver(observer: ContentObserver) {
-        context.contentResolver.unregisterContentObserver(observer)
+        try {
+            context.contentResolver.unregisterContentObserver(observer)
+        } catch (e: Exception) {
+            // no-op
+        }
     }
 
     fun upsertEvent(reminder: Reminder, calendarId: Long): Long? {

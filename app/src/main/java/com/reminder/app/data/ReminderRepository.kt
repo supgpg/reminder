@@ -83,47 +83,51 @@ class ReminderRepository(
 
     suspend fun syncAllToCalendar() {
         if (!isSyncActive()) return
-
-        dao.getAllOnce().forEach { syncToCalendar(it) }
+        try {
+            dao.getAllOnce().forEach { syncToCalendar(it) }
+        } catch (_: Exception) { }
     }
 
     suspend fun importFromCalendar() {
         if (!isSyncActive()) return
+        try {
+            val selected = personaPreferences.selectedCalendarIds.first()
+            val existing = dao.getAllOnce()
+            val byEventId = existing.mapNotNull { reminder ->
+                reminder.calendarEventId?.let { it to reminder }
+            }.toMap()
 
-        val selected = personaPreferences.selectedCalendarIds.first()
-        val existing = dao.getAllOnce()
-        val byEventId = existing.mapNotNull { reminder -> reminder.calendarEventId?.let { it to reminder } }.toMap()
+            val sinceMillis = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
 
-        val sinceMillis = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.timeInMillis
-
-        calendarSyncManager.importEvents(selected, sinceMillis).forEach { event ->
-            val known = byEventId[event.eventId]
-            if (known != null) {
-                if (known.title != event.title || known.description != event.description || known.dueAt != event.dtStart) {
-                    dao.update(
-                        known.copy(
+            calendarSyncManager.importEvents(selected, sinceMillis).forEach { event ->
+                val known = byEventId[event.eventId]
+                if (known != null) {
+                    if (known.title != event.title || known.description != event.description || known.dueAt != event.dtStart) {
+                        dao.update(
+                            known.copy(
+                                title = event.title,
+                                description = event.description,
+                                dueAt = event.dtStart,
+                            ),
+                        )
+                    }
+                } else {
+                    dao.insert(
+                        Reminder(
                             title = event.title,
                             description = event.description,
                             dueAt = event.dtStart,
+                            calendarEventId = event.eventId,
                         ),
                     )
                 }
-            } else {
-                dao.insert(
-                    Reminder(
-                        title = event.title,
-                        description = event.description,
-                        dueAt = event.dtStart,
-                        calendarEventId = event.eventId,
-                    ),
-                )
             }
-        }
+        } catch (_: Exception) { }
     }
 
     suspend fun refreshCalendarSync() {
