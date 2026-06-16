@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.CalendarViewWeek
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.CardDefaults
@@ -65,6 +66,7 @@ fun ReminderListScreen(
     onReminderClick: (Long) -> Unit,
     onSmartAddClick: () -> Unit,
     onDecomposeClick: () -> Unit,
+    onFreeTimeClick: () -> Unit,
 ) {
     val app = LocalContext.current.applicationContext as ReminderApplication
     val viewModel: ReminderListViewModel = viewModel(factory = ReminderListViewModel.factory(app))
@@ -113,6 +115,13 @@ fun ReminderListScreen(
                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 ) {
                     Icon(Icons.Filled.Checklist, contentDescription = stringResource(R.string.decompose_fab))
+                }
+                SmallFloatingActionButton(
+                    onClick = onFreeTimeClick,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                ) {
+                    Icon(Icons.Filled.CalendarViewWeek, contentDescription = stringResource(R.string.freetime_fab))
                 }
                 FloatingActionButton(
                     onClick = onAddClick,

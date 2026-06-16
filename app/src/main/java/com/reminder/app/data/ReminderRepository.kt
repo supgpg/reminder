@@ -130,6 +130,17 @@ class ReminderRepository(
         } catch (_: Exception) { }
     }
 
+    suspend fun reschedule(id: Long, newDueAt: Long) {
+        dao.reschedule(id, newDueAt)
+        if (isSyncActive()) {
+            dao.getById(id)?.let { syncToCalendar(it) }
+        }
+    }
+
+    suspend fun getPendingReminders(): List<Reminder> {
+        return dao.getAllOnce().filter { !it.isDone }
+    }
+
     suspend fun refreshCalendarSync() {
         syncAllToCalendar()
         importFromCalendar()

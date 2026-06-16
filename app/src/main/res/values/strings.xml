@@ -92,4 +92,13 @@
     <string name="usage_nagging_grant_button">앱 사용 정보 접근 허용하기</string>
     <string name="usage_nagging_grant_hint">시스템 설정에서 이 앱의 앱 사용 정보 접근을 허용해 주세요</string>
     <string name="usage_nagging_active">✓ 앱 사용 패턴 연동 중 — 잔소리에 사용 기록이 반영돼요</string>
+
+    <!-- 캘린더 빈 시간 AI 채우기 -->
+    <string name="freetime_title">AI 빈 시간 채우기</string>
+    <string name="freetime_fab">AI 빈 시간 채우기</string>
+    <string name="freetime_description">오늘·내일 캘린더를 분석해 미완료 할 일을 빈 시간에 자동으로 배치해 드려요</string>
+    <string name="freetime_analyze">캘린더 분석하기</string>
+    <string name="freetime_apply">선택한 일정 적용하기</string>
+    <string name="freetime_no_suggestions">AI가 적절한 빈 시간을 찾지 못했어요. 캘린더 동기화가 켜져 있는지 확인해보세요.</string>
+    <string name="freetime_no_calendar_permission">캘린더 권한이 없어요. 설정에서 캘린더 동기화를 먼저 켜주세요.</string>
 </resources>

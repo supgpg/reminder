@@ -36,4 +36,7 @@ interface ReminderDao {
 
     @Query("UPDATE reminders SET calendarEventId = :calendarEventId WHERE id = :id")
     suspend fun updateCalendarEventId(id: Long, calendarEventId: Long?)
+
+    @Query("UPDATE reminders SET dueAt = :newDueAt WHERE id = :id")
+    suspend fun reschedule(id: Long, newDueAt: Long)
 }

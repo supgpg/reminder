@@ -26,6 +26,7 @@ import androidx.navigation.navArgument
 import com.reminder.app.R
 import com.reminder.app.ui.addedit.AddEditReminderScreen
 import com.reminder.app.ui.decompose.TaskDecompositionScreen
+import com.reminder.app.ui.freetime.FreeTimeScheduleScreen
 import com.reminder.app.ui.reminderlist.ReminderListScreen
 import com.reminder.app.ui.report.ReportScreen
 import com.reminder.app.ui.settings.SettingsScreen
@@ -36,6 +37,7 @@ object Routes {
     const val ADD_EDIT = "add_edit"
     const val DECOMPOSE = "decompose"
     const val SMART_ADD = "smart_add"
+    const val FREE_TIME = "free_time"
     const val REMINDER_ID_ARG = "reminderId"
     val ADD_EDIT_ROUTE = "$ADD_EDIT?$REMINDER_ID_ARG={$REMINDER_ID_ARG}"
 
@@ -54,11 +56,16 @@ fun AppNavGraph() {
                 onReminderClick = { id -> navController.navigate(Routes.addEdit(id)) },
                 onSmartAddClick = { navController.navigate(Routes.SMART_ADD) },
                 onDecomposeClick = { navController.navigate(Routes.DECOMPOSE) },
+                onFreeTimeClick = { navController.navigate(Routes.FREE_TIME) },
             )
         }
 
         composable(Routes.DECOMPOSE) {
             TaskDecompositionScreen(onDone = { navController.popBackStack() })
+        }
+
+        composable(Routes.FREE_TIME) {
+            FreeTimeScheduleScreen(onDone = { navController.popBackStack() })
         }
 
         composable(Routes.SMART_ADD) {
@@ -96,6 +103,7 @@ private fun MainScreen(
     onReminderClick: (Long) -> Unit,
     onSmartAddClick: () -> Unit,
     onDecomposeClick: () -> Unit,
+    onFreeTimeClick: () -> Unit,
 ) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
 
@@ -130,6 +138,7 @@ private fun MainScreen(
                     onReminderClick = onReminderClick,
                     onSmartAddClick = onSmartAddClick,
                     onDecomposeClick = onDecomposeClick,
+                    onFreeTimeClick = onFreeTimeClick,
                 )
                 1 -> ReportScreen()
                 2 -> SettingsScreen()
