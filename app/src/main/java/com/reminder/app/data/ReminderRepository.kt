@@ -108,12 +108,8 @@ class ReminderRepository(
                 reminder.calendarEventId?.let { it to reminder }
             }.toMap()
 
-            val sinceMillis = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }.timeInMillis
+            // Import from 30 days ago so pre-existing calendar events are picked up on first sync.
+            val sinceMillis = System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000
 
             calendarSyncManager.importEvents(selected, sinceMillis).forEach { event ->
                 // Strip the "✅ " prefix we add to completed events on push, so a round-trip
