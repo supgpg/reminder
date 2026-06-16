@@ -68,4 +68,9 @@
     <string name="report_postponed">미룬 적 있는 할 일 %1$d개 (평균 %2$.1f회)</string>
     <string name="report_caught_up">지난 할 일 중 이번에 처리한 일 %1$d개</string>
     <string name="report_ai_feedback_title">AI 코치의 한마디</string>
+
+    <!-- 하단 내비게이션 -->
+    <string name="nav_list">할 일</string>
+    <string name="nav_report">리포트</string>
+    <string name="nav_settings">설정</string>
 </resources>

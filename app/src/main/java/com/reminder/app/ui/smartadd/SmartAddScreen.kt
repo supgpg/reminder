@@ -13,10 +13,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,27 +45,38 @@ fun SmartAddScreen(onBack: () -> Unit, onNavigateToAddEdit: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.smart_add_title)) },
+                title = {
+                    Text(
+                        text = stringResource(R.string.smart_add_title),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ),
             )
         },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = 20.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             OutlinedTextField(
                 value = uiState.input,
                 onValueChange = viewModel::updateInput,
                 label = { Text(stringResource(R.string.smart_add_input_label)) },
                 modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                textStyle = MaterialTheme.typography.bodyLarge,
             )
 
             Button(
@@ -71,18 +84,28 @@ fun SmartAddScreen(onBack: () -> Unit, onNavigateToAddEdit: () -> Unit) {
                 enabled = uiState.input.isNotBlank() && !uiState.isLoading,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(stringResource(R.string.smart_add_analyze))
+                Text(
+                    stringResource(R.string.smart_add_analyze),
+                    style = MaterialTheme.typography.labelLarge,
+                )
             }
 
             if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(top = 8.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                )
             }
 
             if (uiState.showFallbackMessage) {
-                Text(
-                    text = stringResource(R.string.smart_add_fallback_message),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.smart_add_fallback_message),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(16.dp),
+                    )
+                }
             }
         }
     }

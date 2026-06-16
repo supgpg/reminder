@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,27 +48,38 @@ fun TaskDecompositionScreen(onDone: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.decompose_title)) },
+                title = {
+                    Text(
+                        text = stringResource(R.string.decompose_title),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onDone) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ),
             )
         },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = 20.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             OutlinedTextField(
                 value = uiState.goal,
                 onValueChange = viewModel::updateGoal,
                 label = { Text(stringResource(R.string.decompose_goal_label)) },
                 modifier = Modifier.fillMaxWidth(),
+                minLines = 2,
+                textStyle = MaterialTheme.typography.bodyLarge,
             )
 
             Button(
@@ -75,15 +87,22 @@ fun TaskDecompositionScreen(onDone: () -> Unit) {
                 enabled = uiState.goal.isNotBlank() && !uiState.isLoading,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(stringResource(R.string.decompose_analyze))
+                Text(
+                    stringResource(R.string.decompose_analyze),
+                    style = MaterialTheme.typography.labelLarge,
+                )
             }
 
             if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(top = 8.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                )
             } else if (uiState.subtasks.isEmpty()) {
                 Text(
                     text = stringResource(R.string.decompose_empty_message),
                     style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             } else {
                 LazyColumn(
@@ -92,20 +111,33 @@ fun TaskDecompositionScreen(onDone: () -> Unit) {
                 ) {
                     items(uiState.subtasks.size) { index ->
                         val item = uiState.subtasks[index]
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(checked = item.selected, onCheckedChange = { viewModel.toggle(index) })
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Checkbox(
+                                checked = item.selected,
+                                onCheckedChange = { viewModel.toggle(index) },
+                            )
                             OutlinedTextField(
                                 value = item.text,
                                 onValueChange = { viewModel.updateText(index, it) },
                                 modifier = Modifier.weight(1f),
                                 singleLine = true,
+                                textStyle = MaterialTheme.typography.bodyMedium,
                             )
                         }
                     }
                 }
 
-                Button(onClick = viewModel::confirm, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.decompose_add_selected))
+                Button(
+                    onClick = viewModel::confirm,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        stringResource(R.string.decompose_add_selected),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
                 }
             }
         }
