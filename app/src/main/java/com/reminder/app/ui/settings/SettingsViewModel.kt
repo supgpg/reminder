@@ -1,10 +1,12 @@
 package com.reminder.app.ui.settings
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.reminder.app.ReminderApplication
 import com.reminder.app.calendar.CalendarInfo
 import com.reminder.app.calendar.CalendarSyncManager
+import com.reminder.app.data.AppUsageStatsCollector
 import com.reminder.app.data.PersonaPreferences
 import com.reminder.app.data.ReminderRepository
 import com.reminder.app.data.SpiceLevel
@@ -20,6 +22,7 @@ class SettingsViewModel(
     private val personaPreferences: PersonaPreferences,
     private val repository: ReminderRepository,
     private val calendarSyncManager: CalendarSyncManager,
+    private val appContext: Context,
 ) : ViewModel() {
 
     val spiceLevel: StateFlow<SpiceLevel> = personaPreferences.spiceLevel
@@ -93,9 +96,16 @@ class SettingsViewModel(
         }
     }
 
+    private val _usageStatsGranted = MutableStateFlow(false)
+    val usageStatsGranted: StateFlow<Boolean> = _usageStatsGranted.asStateFlow()
+
+    fun refreshUsageStatsStatus() {
+        _usageStatsGranted.value = AppUsageStatsCollector.hasPermission(appContext)
+    }
+
     companion object {
         fun factory(app: ReminderApplication) = simpleViewModelFactory {
-            SettingsViewModel(app.personaPreferences, app.repository, app.calendarSyncManager)
+            SettingsViewModel(app.personaPreferences, app.repository, app.calendarSyncManager, app)
         }
     }
 }

@@ -85,4 +85,11 @@
     <string name="notif_mining_grant_button">알림 접근 허용하기</string>
     <string name="notif_mining_grant_hint">시스템 설정에서 이 앱의 알림 접근을 허용해 주세요</string>
     <string name="notif_mining_switch">할 일 자동 감지</string>
+
+    <!-- 앱 사용 패턴 잔소리 -->
+    <string name="usage_nagging_title">앱 사용 패턴 맞춤 잔소리</string>
+    <string name="usage_nagging_description">알림 시 최근 사용한 앱(유튜브, 인스타그램 등)을 AI가 파악해 더 뼈아픈 맞춤 잔소리를 만들어 드려요</string>
+    <string name="usage_nagging_grant_button">앱 사용 정보 접근 허용하기</string>
+    <string name="usage_nagging_grant_hint">시스템 설정에서 이 앱의 앱 사용 정보 접근을 허용해 주세요</string>
+    <string name="usage_nagging_active">✓ 앱 사용 패턴 연동 중 — 잔소리에 사용 기록이 반영돼요</string>
 </resources>

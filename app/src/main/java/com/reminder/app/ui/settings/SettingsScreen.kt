@@ -64,6 +64,7 @@ fun SettingsScreen() {
 
     val notificationListenerGranted by viewModel.notificationListenerGranted.collectAsState()
     val notificationMiningEnabled by viewModel.notificationMiningEnabled.collectAsState()
+    val usageStatsGranted by viewModel.usageStatsGranted.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -72,6 +73,7 @@ fun SettingsScreen() {
                 viewModel.refreshListenerStatus(
                     NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
                 )
+                viewModel.refreshUsageStatsStatus()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -304,6 +306,51 @@ fun SettingsScreen() {
                         onCheckedChange = { viewModel.setNotificationMiningEnabled(it) },
                     )
                 }
+            }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                color = MaterialTheme.colorScheme.outlineVariant,
+            )
+
+            SectionHeader(text = stringResource(R.string.usage_nagging_title))
+
+            Text(
+                text = stringResource(R.string.usage_nagging_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (!usageStatsGranted) {
+                Button(
+                    onClick = {
+                        context.startActivity(
+                            android.content.Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                ) {
+                    Text(stringResource(R.string.usage_nagging_grant_button))
+                }
+                Text(
+                    text = stringResource(R.string.usage_nagging_grant_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.usage_nagging_active),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                )
             }
 
             Spacer(modifier = Modifier.height(20.dp))

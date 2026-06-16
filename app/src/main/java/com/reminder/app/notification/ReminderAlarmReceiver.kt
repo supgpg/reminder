@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.reminder.app.ReminderApplication
+import com.reminder.app.data.AppUsageStatsCollector
 import com.reminder.app.network.FallbackNagging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,8 @@ class ReminderAlarmReceiver : BroadcastReceiver() {
                 notifier.show(reminder, FallbackNagging.pick(reminder, app.personaPreferences.spiceLevel.first()))
 
                 val spiceLevel = app.personaPreferences.spiceLevel.first()
-                val message = app.naggingRepository.generateMessage(reminder, spiceLevel)
+                val usageContext = AppUsageStatsCollector.getRecentUsageSummary(context)
+                val message = app.naggingRepository.generateMessage(reminder, spiceLevel, usageContext)
                 notifier.show(reminder, message)
             } finally {
                 pendingResult.finish()

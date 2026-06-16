@@ -8,7 +8,7 @@ import com.reminder.app.data.SpiceLevel
  */
 object NaggingPromptBuilder {
 
-    fun buildSystemPrompt(spiceLevel: SpiceLevel, postponeCount: Int): String {
+    fun buildSystemPrompt(spiceLevel: SpiceLevel, postponeCount: Int, usageContext: String? = null): String {
         val persona = when (spiceLevel) {
             SpiceLevel.MILD ->
                 "너는 따뜻하고 다정한 친구야. 사용자가 할 일을 미루고 있을 때, " +
@@ -30,10 +30,15 @@ object NaggingPromptBuilder {
                     "결국엔 응원하는 느낌으로 마무리해."
         }
 
+        val usagePart = usageContext?.let {
+            " 참고로 사용자가 최근 2시간 동안 $it 등을 사용하고 있었으니, 이 사실을 자연스럽게 한 번 언급하면서 잔소리를 더 뼈아프게 만들어."
+        } ?: ""
+
         return buildString {
             append(persona)
             append(" ")
             append(escalation)
+            append(usagePart)
             append(" 반드시 한국어로, 2문장 이내, 이모지 1개 이하로 답해.")
         }
     }
