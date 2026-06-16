@@ -13,6 +13,8 @@ import com.reminder.app.notification.AlarmScheduler
 import com.reminder.app.notification.NaggingNotifier
 import com.reminder.app.ui.simpleViewModelFactory
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -31,10 +33,17 @@ class ReminderListViewModel(
     private val syncExceptionHandler = CoroutineExceptionHandler { _, _ -> /* ignore sync errors */ }
 
     private var calendarObserver: ContentObserver? = null
+    private var observerDebounceJob: Job? = null
 
     init {
+        // ContentObserver only imports from calendar (never writes back) to avoid an infinite loop:
+        // writing to calendar → observer fires → sync writes again → observer fires → ...
         calendarObserver = calendarSyncManager.registerObserver(Handler(Looper.getMainLooper())) {
-            viewModelScope.launch(syncExceptionHandler) { repository.refreshCalendarSync() }
+            observerDebounceJob?.cancel()
+            observerDebounceJob = viewModelScope.launch(syncExceptionHandler) {
+                delay(2_000)
+                repository.importFromCalendar()
+            }
         }
         viewModelScope.launch(syncExceptionHandler) { repository.refreshCalendarSync() }
     }

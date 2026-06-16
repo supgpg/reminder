@@ -3,6 +3,8 @@ package com.reminder.app.data
 import com.reminder.app.calendar.CalendarSyncManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.Calendar
 
 class ReminderRepository(
@@ -10,6 +12,7 @@ class ReminderRepository(
     private val calendarSyncManager: CalendarSyncManager,
     private val personaPreferences: PersonaPreferences,
 ) {
+    private val syncMutex = Mutex()
 
     fun observeAll(): Flow<List<Reminder>> = dao.observeAll()
 
@@ -142,8 +145,11 @@ class ReminderRepository(
     }
 
     suspend fun refreshCalendarSync() {
-        syncAllToCalendar()
-        importFromCalendar()
+        if (syncMutex.isLocked) return
+        syncMutex.withLock {
+            syncAllToCalendar()
+            importFromCalendar()
+        }
     }
 
     private suspend fun syncToCalendar(reminder: Reminder) {
