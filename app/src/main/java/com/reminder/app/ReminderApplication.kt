@@ -10,8 +10,10 @@ import com.reminder.app.network.PostponeConsultantRepository
 import com.reminder.app.network.ReportRepository
 import com.reminder.app.network.SmartScheduleRepository
 import com.reminder.app.network.TaskDecompositionRepository
+import com.reminder.app.network.NotificationMiningRepository
 import com.reminder.app.notification.AlarmScheduler
 import com.reminder.app.notification.NaggingNotifier
+import com.reminder.app.notification.TaskSuggestionNotifier
 
 class ReminderApplication : Application() {
 
@@ -39,9 +41,12 @@ class ReminderApplication : Application() {
 
     val alarmScheduler: AlarmScheduler by lazy { AlarmScheduler(this) }
 
+    val notificationMiningRepository: NotificationMiningRepository by lazy { NotificationMiningRepository() }
+
     override fun onCreate() {
         super.onCreate()
         // Pre-create the notification channel so it exists before any alarm fires.
         NaggingNotifier(this)
+        TaskSuggestionNotifier(this)
     }
 }

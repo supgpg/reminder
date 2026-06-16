@@ -73,4 +73,16 @@
     <string name="nav_list">할 일</string>
     <string name="nav_report">리포트</string>
     <string name="nav_settings">설정</string>
+
+    <!-- 알림 할 일 자동 추출 -->
+    <string name="notif_suggestion_channel_name">할 일 감지 알림</string>
+    <string name="notif_suggestion_channel_desc">다른 앱에서 할 일을 감지했을 때 표시합니다</string>
+    <string name="notif_task_detected">할 일이 감지됐어요 ✨</string>
+    <string name="notif_task_add">할 일 추가</string>
+    <string name="notif_task_dismiss">무시</string>
+    <string name="notif_mining_title">알림 할 일 자동 추출</string>
+    <string name="notif_mining_description">카카오톡, 이메일 등에서 받은 알림을 AI가 분석해 할 일을 자동으로 제안해요</string>
+    <string name="notif_mining_grant_button">알림 접근 허용하기</string>
+    <string name="notif_mining_grant_hint">시스템 설정에서 이 앱의 알림 접근을 허용해 주세요</string>
+    <string name="notif_mining_switch">할 일 자동 감지</string>
 </resources>

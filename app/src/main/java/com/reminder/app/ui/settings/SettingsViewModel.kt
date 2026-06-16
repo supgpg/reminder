@@ -77,6 +77,22 @@ class SettingsViewModel(
         }
     }
 
+    private val _notificationListenerGranted = MutableStateFlow(false)
+    val notificationListenerGranted: StateFlow<Boolean> = _notificationListenerGranted.asStateFlow()
+
+    val notificationMiningEnabled: StateFlow<Boolean> = personaPreferences.notificationMiningEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    fun refreshListenerStatus(granted: Boolean) {
+        _notificationListenerGranted.value = granted
+    }
+
+    fun setNotificationMiningEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            personaPreferences.setNotificationMiningEnabled(enabled)
+        }
+    }
+
     companion object {
         fun factory(app: ReminderApplication) = simpleViewModelFactory {
             SettingsViewModel(app.personaPreferences, app.repository, app.calendarSyncManager)

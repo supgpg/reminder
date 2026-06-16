@@ -2,6 +2,7 @@ package com.reminder.app.ui.settings
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,7 +41,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.reminder.app.R
 import com.reminder.app.ReminderApplication
@@ -55,6 +61,22 @@ fun SettingsScreen() {
     val calendarSyncEnabled by viewModel.calendarSyncEnabled.collectAsState()
     val selectedCalendarIds by viewModel.selectedCalendarIds.collectAsState()
     val availableCalendars by viewModel.availableCalendars.collectAsState()
+
+    val notificationListenerGranted by viewModel.notificationListenerGranted.collectAsState()
+    val notificationMiningEnabled by viewModel.notificationMiningEnabled.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshListenerStatus(
+                    NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
+                )
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     val calendarPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
@@ -226,6 +248,61 @@ fun SettingsScreen() {
                         .padding(horizontal = 20.dp),
                 ) {
                     Text(stringResource(R.string.calendar_sync_button))
+                }
+            }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                color = MaterialTheme.colorScheme.outlineVariant,
+            )
+
+            SectionHeader(text = stringResource(R.string.notif_mining_title))
+
+            Text(
+                text = stringResource(R.string.notif_mining_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (!notificationListenerGranted) {
+                Button(
+                    onClick = {
+                        context.startActivity(
+                            android.content.Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                ) {
+                    Text(stringResource(R.string.notif_mining_grant_button))
+                }
+                Text(
+                    text = stringResource(R.string.notif_mining_grant_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                )
+            } else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = stringResource(R.string.notif_mining_switch),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Switch(
+                        checked = notificationMiningEnabled,
+                        onCheckedChange = { viewModel.setNotificationMiningEnabled(it) },
+                    )
                 }
             }
 

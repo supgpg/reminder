@@ -47,4 +47,16 @@ class PersonaPreferences(private val context: Context) {
             prefs[selectedCalendarIdsKey] = ids.map { it.toString() }.toSet()
         }
     }
+
+    private val notificationMiningEnabledKey = booleanPreferencesKey("notification_mining_enabled")
+
+    val notificationMiningEnabled: Flow<Boolean> = context.personaDataStore.data.map { prefs ->
+        prefs[notificationMiningEnabledKey] ?: false
+    }
+
+    suspend fun setNotificationMiningEnabled(enabled: Boolean) {
+        context.personaDataStore.edit { prefs ->
+            prefs[notificationMiningEnabledKey] = enabled
+        }
+    }
 }
